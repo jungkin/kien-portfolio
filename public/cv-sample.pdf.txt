@@ -1,0 +1,2 @@
+Replace this file with your actual CV/resume as cv.pdf
+The hero section links to /cv.pdf — place your file here.
