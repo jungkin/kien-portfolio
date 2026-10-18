@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import type { GalleryItem } from "@/data/gallery";
@@ -10,44 +11,49 @@ interface GalleryViewerProps {
 }
 
 export default function GalleryViewer({ item, onClose }: GalleryViewerProps) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+    return () => previous?.focus?.();
+  }, []);
+
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Backdrop */}
+      <div className="absolute inset-0 bg-ink/60" onClick={onClose} aria-hidden="true" />
+
       <div
-        className="absolute inset-0 bg-black/85 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Content */}
-      <motion.div
-        className="relative z-10 w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-2xl border border-border bg-card/95 backdrop-blur-xl"
-        initial={{ scale: 0.9, y: 30 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 30 }}
-        transition={{ duration: 0.3 }}
+        role="dialog"
+        aria-modal="true"
+        aria-label={item.title}
+        className="relative z-10 max-h-[90vh] w-full max-w-5xl overflow-y-auto border border-ink bg-paper"
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full border border-border bg-background/80 flex items-center justify-center text-foreground/60 hover:text-foreground hover:border-foreground transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <div className="flex items-center justify-between border-b border-rule px-4 py-3">
+          <span className="label">
+            {item.category} · {item.year}
+          </span>
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={onClose}
+            className="border border-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink transition-colors hover:bg-ink hover:text-paper"
+          >
+            Close <span aria-hidden="true">✕</span>
+          </button>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 p-6 md:p-8">
-          {/* Left - Media (takes up 3 columns) */}
+        <div className="grid grid-cols-1 gap-6 p-4 md:grid-cols-5 md:p-8">
           <div className="md:col-span-3">
             {item.type === "video" && item.media ? (
               <video
                 src={item.media}
-                className="w-full rounded-xl border border-border"
+                className="w-full border border-rule"
                 controls
                 muted
                 autoPlay
@@ -55,13 +61,13 @@ export default function GalleryViewer({ item, onClose }: GalleryViewerProps) {
                 playsInline
               />
             ) : (
-              <div className="relative w-full rounded-xl border border-border overflow-hidden">
+              <div className="border border-rule bg-paper-2">
                 <Image
                   src={item.image}
                   alt={item.title}
                   width={1600}
                   height={1200}
-                  className="w-full h-auto object-contain"
+                  className="h-auto w-full object-contain"
                   sizes="(max-width: 768px) 100vw, 60vw"
                   priority
                 />
@@ -69,53 +75,22 @@ export default function GalleryViewer({ item, onClose }: GalleryViewerProps) {
             )}
           </div>
 
-          {/* Right - Details (takes up 2 columns) */}
-          <div className="md:col-span-2 flex flex-col gap-4">
-            <div>
-              <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-bold text-foreground">
-                {item.title}
-              </h2>
-            </div>
-
-            {/* Tags */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-cyan font-mono text-sm">{item.year}</span>
-              <span className="px-2 py-0.5 rounded-full bg-surface text-foreground/60 text-xs border border-border">
-                {item.category}
-              </span>
-              {item.type === "video" && (
-                <span className="px-2 py-0.5 rounded-full bg-surface text-foreground/60 text-xs border border-border">
-                  Video
-                </span>
-              )}
-            </div>
-
-            {/* Description */}
-            <p className="text-foreground/60 leading-relaxed">
-              {item.description}
-            </p>
-
-            {/* External link */}
+          <div className="flex flex-col gap-4 md:col-span-2">
+            <h2 className="font-display text-2xl tracking-tight text-ink">{item.title}</h2>
+            <p className="leading-relaxed text-ink-2">{item.description}</p>
             {item.link && (
               <a
                 href={item.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-cyan text-cyan text-sm hover:bg-cyan hover:text-background transition-all duration-300 w-fit"
+                className="w-fit border border-ink px-3 py-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink hover:bg-ink hover:text-paper"
               >
-                {item.link.includes("artstation")
-                  ? "View on ArtStation"
-                  : item.link.includes("youtube")
-                  ? "Watch on YouTube"
-                  : "View External"}
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
+                View external ↗
               </a>
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }

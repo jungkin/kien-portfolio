@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" fill="none" stroke="#15161a" stroke-width="1.25" font-family="IBM Plex Mono, monospace" font-size="10">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L10 5 L0 9 z" fill="#15161a" stroke="none"/></marker>
+    <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#15161a" stroke-width="0.6"/></pattern>
+  </defs>
+  <!-- centerline -->
+  <line x1="40" y1="300" x2="760" y2="300" stroke-dasharray="14 3 2 3" stroke-width="0.8"/>
+  <!-- body tube (side view, half-section lines) -->
+  <line x1="60" y1="230" x2="740" y2="230"/><line x1="60" y1="370" x2="740" y2="370"/>
+  <line x1="60" y1="238" x2="740" y2="238" stroke-width="0.6"/><line x1="60" y1="362" x2="740" y2="362" stroke-width="0.6"/>
+  <!-- airbrake bay cutout -->
+  <line x1="300" y1="230" x2="300" y2="238"/><line x1="560" y1="230" x2="560" y2="238"/>
+  <line x1="300" y1="362" x2="300" y2="370"/><line x1="560" y1="362" x2="560" y2="370"/>
+  <!-- bulkheads -->
+  <rect x="290" y="238" width="10" height="124" fill="url(#h)"/>
+  <rect x="560" y="238" width="10" height="124" fill="url(#h)"/>
+  <!-- lead screw / actuator rod -->
+  <rect x="330" y="294" width="190" height="12"/>
+  <line x1="330" y1="300" x2="520" y2="300" stroke-width="0.4"/>
+  <rect x="315" y="276" width="30" height="48"/>
+  <!-- slider nut -->
+  <rect x="440" y="284" width="26" height="32" fill="#FF4F1F" fill-opacity="0.9"/>
+  <!-- lever arms top & bottom -->
+  <line x1="453" y1="284" x2="500" y2="226"/><line x1="453" y1="316" x2="500" y2="374"/>
+  <circle cx="453" cy="284" r="3"/><circle cx="453" cy="316" r="3"/>
+  <circle cx="500" cy="226" r="3"/><circle cx="500" cy="374" r="3"/>
+  <!-- deployed flaps -->
+  <path d="M500 226 L536 128 L556 134 L520 232 Z"/>
+  <path d="M500 374 L536 472 L556 466 L520 368 Z"/>
+  <line x1="508" y1="204" x2="544" y2="146" stroke-width="0.5"/>
+  <line x1="508" y1="396" x2="544" y2="454" stroke-width="0.5"/>
+  <!-- dimension: flap deployment height -->
+  <line x1="556" y1="134" x2="640" y2="134" stroke-width="0.6"/><line x1="556" y1="466" x2="640" y2="466" stroke-width="0.6"/>
+  <line x1="634" y1="134" x2="634" y2="466" stroke-width="0.8" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="644" y="304" fill="#15161a" stroke="none">DEPLOYED</text>
+  <text x="644" y="316" fill="#15161a" stroke="none">SPAN</text>
+  <!-- dimension: lever arm -->
+  <line x1="453" y1="500" x2="453" y2="320" stroke-width="0.4"/>
+  <line x1="500" y1="500" x2="500" y2="378" stroke-width="0.4"/>
+  <line x1="453" y1="496" x2="500" y2="496" stroke-width="0.8" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="476" y="514" text-anchor="middle" fill="#15161a" stroke="none">LEVER TRAVEL</text>
+  <!-- airflow arrows -->
+  <line x1="90" y1="170" x2="210" y2="170" stroke-width="0.8" marker-end="url(#a)"/>
+  <text x="90" y="160" fill="#15161a" stroke="none">AIRFLOW</text>
+  <line x1="90" y1="430" x2="210" y2="430" stroke-width="0.8" marker-end="url(#a)"/>
+  <!-- callouts -->
+  <polyline points="453,284 400,200 330,200" stroke-width="0.8"/>
+  <text x="200" y="204" fill="#15161a" stroke="none">SLIDER NUT</text>
+  <polyline points="430,300 400,420 330,420" stroke-width="0.8" />
+  <text x="215" y="424" fill="#15161a" stroke="none">LEAD SCREW</text>
+  <!-- title block -->
+  <g stroke-width="1"><rect x="470" y="535" width="290" height="50"/><line x1="470" y1="558" x2="760" y2="558" stroke-width="0.6"/></g>
+  <text x="480" y="551" fill="#15161a" stroke="none">ROCKET AIRBRAKE MECHANISM</text>
+  <text x="480" y="574" fill="#15161a" stroke="none" font-size="9">DWG 02 · SCALE NTS · REV A</text>
+</svg>

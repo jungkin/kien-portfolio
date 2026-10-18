@@ -1,86 +1,70 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
-import { projects } from "@/data/projects";
-import type { Project } from "@/data/projects";
+import { useCallback, useEffect, useState } from "react";
 import SectionHeading from "@/components/global/SectionHeading";
-import ScrollReveal from "@/components/global/ScrollReveal";
+import { projects } from "@/data/projects";
 import ProjectCard from "./ProjectCard";
 import ProjectExpanded from "./ProjectExpanded";
-import OthersGrid from "./OthersGrid";
 
-// Featured projects (first 3)
-const featured = projects.slice(0, 3);
-const others = projects.slice(3);
+const PREFIX = "#work/";
+
+function slugFromHash(): string | null {
+  if (typeof window === "undefined") return null;
+  const hash = window.location.hash;
+  if (!hash.startsWith(PREFIX)) return null;
+  const slug = decodeURIComponent(hash.slice(PREFIX.length));
+  return projects.some((p) => p.slug === slug) ? slug : null;
+}
 
 export default function ProjectsSection() {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [showOthers, setShowOthers] = useState(false);
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
 
-  // Close on Escape
+  // Open the case study matching the URL hash, on load and on back/forward.
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSelectedProject(null);
+    const sync = () => setOpenSlug(slugFromHash());
+    const t = window.setTimeout(sync, 0);
+    window.addEventListener("hashchange", sync);
+    window.addEventListener("popstate", sync);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("hashchange", sync);
+      window.removeEventListener("popstate", sync);
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  // Lock scroll when modal open
-  useEffect(() => {
-    document.body.style.overflow = selectedProject ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [selectedProject]);
+  const open = useCallback((slug: string) => {
+    setOpenSlug(slug);
+    window.history.pushState(null, "", `${PREFIX}${slug}`);
+  }, []);
+
+  const close = useCallback(() => {
+    setOpenSlug(null);
+    if (window.location.hash.startsWith(PREFIX)) {
+      window.history.replaceState(null, "", "#work");
+    }
+  }, []);
+
+  const selected = projects.find((p) => p.slug === openSlug) ?? null;
+  const [featured, ...rest] = projects;
 
   return (
-    <section id="projects" className="relative z-10 py-24 px-6">
-      <div className="max-w-7xl mx-auto">
-        <SectionHeading number="03" title="Projects" />
+    <section id="work" className="relative py-20 md:py-32">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <SectionHeading
+          index="01"
+          title="Selected Work"
+          kicker="Actuators, mechanisms and legged robots — built, broken, measured, improved."
+        />
 
-        {/* Featured projects */}
-        <ScrollReveal className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featured.map((project) => (
-            <ProjectCard
-              key={project.slug}
-              project={project}
-              onClick={() => setSelectedProject(project)}
-            />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ProjectCard project={featured} index={0} featured onOpen={open} />
+          {rest.map((project, i) => (
+            <ProjectCard key={project.slug} project={project} index={i + 1} onOpen={open} />
           ))}
-        </ScrollReveal>
-
-        {/* Others button */}
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={() => setShowOthers(!showOthers)}
-            className="px-8 py-3 rounded-lg border border-border text-foreground/60 hover:border-cyan hover:text-cyan font-mono text-sm transition-all duration-300"
-          >
-            {showOthers ? "Hide" : "Other Projects"}
-          </button>
         </div>
-
-        {/* Others grid */}
-        <AnimatePresence>
-          {showOthers && (
-            <OthersGrid
-              projects={others}
-              onSelect={(p) => setSelectedProject(p)}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Expanded project modal */}
-        <AnimatePresence>
-          {selectedProject && (
-            <ProjectExpanded
-              project={selectedProject}
-              onClose={() => setSelectedProject(null)}
-            />
-          )}
-        </AnimatePresence>
       </div>
+
+      {selected && <ProjectExpanded key={selected.slug} project={selected} onClose={close} />}
     </section>
   );
 }

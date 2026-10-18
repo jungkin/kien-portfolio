@@ -1,85 +1,66 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { personalInfo } from "@/data/projects";
-import { flipCards } from "@/data/about";
+import { motion, useReducedMotion } from "framer-motion";
 import SectionHeading from "@/components/global/SectionHeading";
-import ScrollReveal, { itemVariants } from "@/components/global/ScrollReveal";
-import FlipCard from "./FlipCard";
-import SkillPills from "./SkillPills";
+import { bio, currently, awards, portrait } from "@/data/about";
 
 export default function AboutSection() {
-  const [flippedId, setFlippedId] = useState<string | null>(null);
-
-  const handleFlip = (id: string) => {
-    setFlippedId((prev) => (prev === id ? null : id));
-  };
+  const reduce = useReducedMotion();
 
   return (
-    <section id="about" className="relative z-10 py-24 px-6">
-      <div className="max-w-7xl mx-auto">
-        <SectionHeading number="02" title="About Me" />
+    <section id="about" className="relative py-20 md:py-32">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <SectionHeading index="04" title="About" kicker="The person behind the drawings." />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left - Flip cards */}
-          <ScrollReveal className="grid grid-cols-2 gap-4" staggerChildren={0.08}>
-            {flipCards.map((card) => (
-              <motion.div key={card.id} variants={itemVariants}>
-                <FlipCard
-                  card={card}
-                  isFlipped={flippedId === card.id}
-                  onClick={() => handleFlip(card.id)}
-                />
-              </motion.div>
-            ))}
-          </ScrollReveal>
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="grid gap-12 lg:grid-cols-2 lg:gap-16"
+        >
+          <div>
+            <div className="mb-8 flex items-start gap-5">
+              <div className="reg-marks flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden border border-ink bg-paper-2 sm:h-28 sm:w-28">
+                {portrait ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={portrait} alt="Portrait of Kien Nguyen" width={112} height={112} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="font-display text-3xl tracking-tight text-ink" aria-hidden="true">
+                    KN
+                  </span>
+                )}
+              </div>
+              <p className="border-l border-rule pl-4 font-mono text-xs uppercase leading-relaxed tracking-[0.06em] text-ink-2">
+                {currently}
+              </p>
+            </div>
 
-          {/* Right - Bio + Skills */}
-          <ScrollReveal className="flex flex-col gap-8" delay={0.2}>
-            <motion.div variants={itemVariants}>
-              {personalInfo.bio.split("\n\n").map((paragraph, i) => (
-                <p
-                  key={i}
-                  className={`text-lg leading-relaxed ${
-                    i === personalInfo.bio.split("\n\n").length - 1
-                      ? "text-foreground/90 font-medium mt-4"
-                      : "text-foreground/70"
-                  }`}
-                >
-                  {paragraph}
-                </p>
+            <div className="space-y-5 text-lg leading-relaxed text-ink-2">
+              {bio.map((p) => (
+                <p key={p}>{p}</p>
               ))}
-            </motion.div>
+            </div>
+          </div>
 
-            <motion.div variants={itemVariants}>
-              <h3 className="font-[family-name:var(--font-space-grotesk)] text-xl font-bold text-foreground mb-4">
-                Skills & Tools
-              </h3>
-              <SkillPills />
-            </motion.div>
-
-            {/* Legend */}
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-4 text-xs text-foreground/40">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[var(--cat-mechanical)]" />
-                Mechanical
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[var(--cat-software)]" />
-                Software
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[var(--cat-design)]" />
-                Design
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[var(--cat-tools)]" />
-                Tools
-              </span>
-            </motion.div>
-          </ScrollReveal>
-        </div>
+          <div>
+            <h3 className="label mb-3">Awards &amp; Leadership</h3>
+            <ul className="border-t border-ink">
+              {awards.map((a) => (
+                <li
+                  key={`${a.title}-${a.detail}`}
+                  className="grid grid-cols-[64px_1fr] gap-4 border-b border-rule py-4"
+                >
+                  <span className="font-mono text-xs text-ink-3 pt-1">{a.year}</span>
+                  <span>
+                    <span className="font-display text-xl tracking-tight text-ink">{a.title}</span>
+                    {a.detail && <span className="block text-ink-2">{a.detail}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

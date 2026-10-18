@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useMemo } from "react";
+import { AnimatePresence } from "framer-motion";
 import SectionHeading from "@/components/global/SectionHeading";
 import { galleryItems, categories, type Category, type GalleryItem } from "@/data/gallery";
 import GalleryCard from "./GalleryCard";
@@ -11,15 +11,20 @@ export default function LibrarySection() {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
 
-  const filtered = (
-    activeCategory === "All"
-      ? galleryItems
-      : galleryItems.filter((item) => item.category === activeCategory)
-  ).sort((a, b) => b.year.localeCompare(a.year));
+  const filtered = useMemo(
+    () =>
+      (activeCategory === "All"
+        ? [...galleryItems]
+        : galleryItems.filter((item) => item.category === activeCategory)
+      ).sort((a, b) => b.year.localeCompare(a.year)),
+    [activeCategory]
+  );
 
   useEffect(() => {
     document.body.style.overflow = selectedItem ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [selectedItem]);
 
   useEffect(() => {
@@ -30,69 +35,60 @@ export default function LibrarySection() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  return (
-    <section id="library" className="relative z-10 py-24 px-6">
-      <div className="max-w-7xl mx-auto">
-        <SectionHeading number="06" title="Library" />
-        <p className="text-foreground/50 mb-8 -mt-6">
-          A visual archive of all my projects and creations. Click any item to
-          explore.
-        </p>
+  if (galleryItems.length === 0) return null;
 
-        {/* Category tabs */}
-        <div className="flex flex-wrap gap-2 mb-10">
+  return (
+    <section id="gallery" className="relative py-20 md:py-32">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <SectionHeading
+          index="A1"
+          title="Gallery"
+          kicker="Photos and video from the bench, the shop and the field."
+        />
+
+        <div className="mb-10 flex flex-wrap gap-2" role="group" aria-label="Filter gallery">
           {categories.map((cat) => {
             const count =
               cat === "All"
                 ? galleryItems.length
                 : galleryItems.filter((i) => i.category === cat).length;
+            const active = activeCategory === cat;
             return (
               <button
                 key={cat}
+                type="button"
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-lg text-sm font-mono transition-all duration-300 border ${
-                  activeCategory === cat
-                    ? "bg-cyan/10 border-cyan/40 text-cyan shadow-[0_0_15px_rgba(0,240,255,0.1)]"
-                    : "border-white/10 text-foreground/40 hover:border-white/20 hover:text-foreground/60"
+                aria-pressed={active}
+                className={`border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] transition-colors ${
+                  active
+                    ? "border-ink bg-ink text-paper"
+                    : "border-rule text-ink-2 hover:border-ink hover:text-ink"
                 }`}
               >
-                {cat}{" "}
-                <span className="text-[10px] opacity-60">({count})</span>
+                {cat} <span className="opacity-60">({count})</span>
               </button>
             );
           })}
         </div>
 
-        {/* Gallery grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
-        >
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           <AnimatePresence mode="popLayout">
             {filtered.map((item) => (
-              <GalleryCard
-                key={item.id}
-                item={item}
-                onClick={() => setSelectedItem(item)}
-              />
+              <GalleryCard key={item.id} item={item} onClick={() => setSelectedItem(item)} />
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-foreground/30 font-mono py-20">
+          <p className="py-20 text-center font-mono text-sm text-ink-3">
             No items in this category yet.
           </p>
         )}
       </div>
 
-      {/* Fullscreen viewer */}
       <AnimatePresence>
         {selectedItem && (
-          <GalleryViewer
-            item={selectedItem}
-            onClose={() => setSelectedItem(null)}
-          />
+          <GalleryViewer item={selectedItem} onClose={() => setSelectedItem(null)} />
         )}
       </AnimatePresence>
     </section>

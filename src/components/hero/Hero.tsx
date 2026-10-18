@@ -1,135 +1,113 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { personalInfo } from "@/data/projects";
-import SocialIcons from "./SocialIcons";
-import ImageCarousel3D from "./ImageCarousel3D";
+import { motion, useReducedMotion } from "framer-motion";
+import GearFigure from "./GearFigure";
+import TitleBlock from "./TitleBlock";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function Hero() {
-  const nameChars = personalInfo.name.split("");
+  const reduce = useReducedMotion();
+  const rise = (delay: number) =>
+    reduce
+      ? {}
+      : {
+          initial: { opacity: 0, y: 8 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.5, delay, ease: "easeOut" as const },
+        };
+  const slide = (delay: number) =>
+    reduce
+      ? {}
+      : {
+          initial: { y: "105%" },
+          animate: { y: 0 },
+          transition: { duration: 0.8, delay, ease: EASE },
+        };
 
   return (
     <section
-      id="hero"
-      className="relative min-h-screen flex items-center z-10"
+      aria-label="Introduction"
+      className="flex min-h-[92svh] flex-col pb-10 pt-8 md:pt-12"
     >
-      <div className="max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
-        {/* Left side - 60% */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
-          {/* Name - letter by letter animation */}
-          <h1 className="font-[family-name:var(--font-space-grotesk)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            {nameChars.map((char, i) => (
-              <motion.span
-                key={i}
-                className="inline-block"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03, duration: 0.4 }}
-                style={{
-                  textShadow: "0 0 30px rgba(0, 240, 255, 0.3)",
-                }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </h1>
-
-          {/* Subtitles — bigger "Welcome" */}
-          <div>
-            <motion.p
-              className="text-2xl md:text-3xl text-foreground/80 font-[family-name:var(--font-space-grotesk)]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              Welcome to my
-            </motion.p>
-            <motion.p
-              className="text-3xl md:text-4xl font-bold text-cyan font-[family-name:var(--font-space-grotesk)]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-            >
-              Maker Portfolio
-            </motion.p>
-          </div>
-
-          {/* Tagline */}
-          <motion.p
-            className="text-foreground/60 text-lg max-w-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.0 }}
-          >
-            I design and build things.
+      <div className="mx-auto grid w-full max-w-[1200px] flex-1 grid-cols-1 items-center gap-10 px-4 sm:px-6 lg:grid-cols-[55fr_45fr] lg:gap-12">
+        <div>
+          <motion.p className="label" {...rise(0)}>
+            Portfolio · Rev 2026.10
           </motion.p>
 
-          {/* Social icons */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
+          <h1 className="mt-5 font-display text-[clamp(3.5rem,9.5vw,8rem)] font-semibold leading-[0.92] tracking-[-0.04em] text-ink">
+            <span className="block overflow-hidden pb-[0.06em]">
+              <motion.span className="block" {...slide(0.05)}>
+                Kien
+              </motion.span>
+            </span>
+            <span className="block overflow-hidden pb-[0.06em]">
+              <motion.span className="block" {...slide(0.15)}>
+                Nguyen<span className="text-signal">.</span>
+              </motion.span>
+            </span>
+          </h1>
+
+          <motion.p className="label mt-5 !text-ink-2" {...rise(0.3)}>
+            Le Trung Kien Nguyen — he/him
+          </motion.p>
+
+          <motion.p
+            className="mt-6 max-w-xl text-lg leading-relaxed text-ink-2 md:text-xl"
+            {...rise(0.4)}
           >
-            <SocialIcons />
+            Mechanical engineering student at USF designing actuators,
+            mechanisms and legged robots — from first-principles torque math to
+            the assembled prototype.
+          </motion.p>
+
+          <motion.div
+            className="mt-6 inline-flex items-center gap-2.5 border border-rule-strong px-3.5 py-1.5"
+            {...rise(0.5)}
+          >
+            <span className="signal-dot shrink-0" aria-hidden="true" />
+            <span className="font-mono text-[12px] tracking-[0.04em] text-ink">
+              Seeking Summer 2027 robotics internships
+            </span>
           </motion.div>
 
-          {/* CV Button */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6 }}
+            className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3"
+            {...rise(0.6)}
           >
             <a
-              href="/cv.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-cyan text-cyan hover:bg-cyan hover:text-background font-medium transition-all duration-300 animate-pulse-glow"
+              href="#work"
+              className="border border-ink bg-ink px-5 py-3 text-sm font-medium text-paper transition-colors hover:bg-signal-ink hover:border-signal-ink"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              Download CV
+              View work →
+            </a>
+            <a
+              href="/cv.pdf"
+              download
+              className="border border-ink px-5 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+            >
+              Download résumé
+            </a>
+            <a
+              href="mailto:nguyenletrungkien2006@gmail.com"
+              className="px-1 py-3 text-sm font-medium text-ink underline decoration-rule-strong underline-offset-4 transition-colors hover:decoration-signal"
+            >
+              Email me
             </a>
           </motion.div>
         </div>
 
-        {/* Right side - 40% - Carousel */}
-        <div className="lg:col-span-2 hidden lg:block">
-          <ImageCarousel3D />
-        </div>
+        <motion.div {...rise(0.25)} className="min-w-0">
+          <GearFigure />
+        </motion.div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-foreground/30"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
+        className="mx-auto mt-10 w-full max-w-[1200px] px-4 sm:px-6"
+        {...rise(0.7)}
       >
-        <span className="text-xs font-mono">Scroll to explore</span>
-        <svg
-          className="w-5 h-5 animate-bounce-gentle"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 14l-7 7m0 0l-7-7"
-          />
-        </svg>
+        <TitleBlock />
       </motion.div>
     </section>
   );

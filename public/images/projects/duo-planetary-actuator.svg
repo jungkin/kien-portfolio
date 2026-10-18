@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" fill="none" stroke="#15161a" stroke-width="1.25" font-family="IBM Plex Mono, monospace" font-size="10">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L10 5 L0 9 z" fill="#15161a" stroke="none"/></marker>
+    <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#15161a" stroke-width="0.6"/></pattern>
+  </defs>
+  <!-- centerline -->
+  <line x1="60" y1="290" x2="740" y2="290" stroke-dasharray="14 3 2 3" stroke-width="0.8"/>
+  <!-- motor -->
+  <rect x="90" y="200" width="150" height="180"/>
+  <rect x="90" y="200" width="150" height="14" fill="url(#h)"/>
+  <rect x="90" y="366" width="150" height="14" fill="url(#h)"/>
+  <rect x="115" y="228" width="100" height="124" stroke-width="0.8"/>
+  <line x1="140" y1="228" x2="140" y2="352" stroke-width="0.6"/><line x1="190" y1="228" x2="190" y2="352" stroke-width="0.6"/>
+  <rect x="240" y="270" width="40" height="40"/>
+  <!-- shaft -->
+  <rect x="280" y="282" width="110" height="16"/>
+  <!-- housing -->
+  <path d="M280 220 H560 V360 H280 Z"/>
+  <rect x="280" y="220" width="280" height="12" fill="url(#h)"/>
+  <rect x="280" y="348" width="280" height="12" fill="url(#h)"/>
+  <!-- stage 1 sun (signal) + planets + ring -->
+  <rect x="320" y="262" width="60" height="56" fill="#FF4F1F" stroke="#15161a" fill-opacity="0.9"/>
+  <g stroke-width="1">
+    <rect x="322" y="236" width="56" height="20"/><rect x="322" y="324" width="56" height="20"/>
+    <line x1="322" y1="246" x2="378" y2="246" stroke-width="0.5"/><line x1="322" y1="334" x2="378" y2="334" stroke-width="0.5"/>
+  </g>
+  <line x1="316" y1="232" x2="384" y2="232"/><line x1="316" y1="348" x2="384" y2="348"/>
+  <!-- stage 2 -->
+  <rect x="420" y="274" width="46" height="32"/>
+  <rect x="422" y="240" width="42" height="20"/><rect x="422" y="320" width="42" height="20"/>
+  <line x1="390" y1="290" x2="420" y2="290"/>
+  <!-- carrier & output shaft -->
+  <path d="M466 270 H500 V250 H530 V330 H500 V310 H466"/>
+  <rect x="530" y="228" width="26" height="124"/>
+  <!-- output flange -->
+  <rect x="560" y="196" width="44" height="188"/>
+  <circle cx="582" cy="216" r="5"/><circle cx="582" cy="364" r="5"/><circle cx="582" cy="250" r="5"/><circle cx="582" cy="330" r="5"/>
+  <rect x="604" y="270" width="60" height="40"/>
+  <!-- bearings -->
+  <circle cx="300" cy="290" r="0"/>
+  <rect x="496" y="224" width="24" height="10"/><rect x="496" y="346" width="24" height="10"/>
+  <!-- dimension: overall length -->
+  <line x1="90" y1="410" x2="90" y2="440" stroke-width="0.6"/><line x1="664" y1="410" x2="664" y2="440" stroke-width="0.6"/>
+  <line x1="90" y1="434" x2="664" y2="434" stroke-width="0.8" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="377" y="428" text-anchor="middle" fill="#15161a" stroke="none">L = NTS</text>
+  <!-- dimension: housing dia -->
+  <line x1="590" y1="196" x2="700" y2="196" stroke-width="0.6"/><line x1="610" y1="384" x2="700" y2="384" stroke-width="0.6"/>
+  <line x1="694" y1="196" x2="694" y2="384" stroke-width="0.8" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="706" y="294" fill="#15161a" stroke="none">DIA</text>
+  <!-- callouts -->
+  <polyline points="350,262 350,160 420,160" stroke-width="0.8"/>
+  <text x="426" y="164" fill="#15161a" stroke="none">SUN GEAR (STAGE 1)</text>
+  <polyline points="443,240 443,130 470,130" stroke-width="0.8"/>
+  <text x="476" y="134" fill="#15161a" stroke="none">PLANET GEAR (STAGE 2)</text>
+  <polyline points="150,200 150,110 190,110" stroke-width="0.8"/>
+  <text x="196" y="114" fill="#15161a" stroke="none">MOTOR</text>
+  <polyline points="582,384 582,470 520,470" stroke-width="0.8"/>
+  <text x="400" y="474" fill="#15161a" stroke="none">OUTPUT FLANGE</text>
+  <!-- title block -->
+  <g stroke-width="1"><rect x="470" y="520" width="290" height="50"/><line x1="470" y1="545" x2="760" y2="545" stroke-width="0.6"/></g>
+  <text x="480" y="537" fill="#15161a" stroke="none" font-size="10">DUO-PLANETARY ACTUATOR</text>
+  <text x="480" y="562" fill="#15161a" stroke="none" font-size="9">DWG 01 · SCALE NTS · REV A</text>
+</svg>

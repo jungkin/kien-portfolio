@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" fill="none" stroke="#15161a" stroke-width="1.25" font-family="IBM Plex Mono, monospace" font-size="10">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L10 5 L0 9 z" fill="#15161a" stroke="none"/></marker>
+    <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#15161a" stroke-width="0.6"/></pattern>
+  </defs>
+  <!-- mud line -->
+  <path d="M30 400 H780" stroke-width="1.5"/>
+  <rect x="30" y="400" width="750" height="26" fill="url(#h)" stroke="none" opacity="0.7"/>
+  <path d="M30 426 H780" stroke-width="0.5"/>
+  <!-- body -->
+  <rect x="190" y="170" width="260" height="70"/>
+  <line x1="190" y1="190" x2="450" y2="190" stroke-width="0.6"/>
+  <rect x="215" y="200" width="60" height="30" stroke-width="0.8"/>
+  <rect x="380" y="198" width="40" height="34" stroke-width="0.8"/>
+  <circle cx="320" cy="205" r="14" stroke-width="0.8"/>
+  <line x1="190" y1="205" x2="450" y2="205" stroke-dasharray="14 3 2 3" stroke-width="0.6"/>
+  <!-- hip servos -->
+  <rect x="198" y="236" width="30" height="24"/><rect x="412" y="236" width="30" height="24"/>
+  <!-- rear leg -->
+  <line x1="213" y1="260" x2="170" y2="330"/><line x1="223" y1="260" x2="180" y2="330"/>
+  <circle cx="175" cy="330" r="7"/>
+  <line x1="172" y1="337" x2="150" y2="388"/><line x1="180" y1="337" x2="158" y2="388"/>
+  <path d="M130 388 H180 L170 398 H140 Z"/>
+  <!-- front leg -->
+  <line x1="427" y1="260" x2="470" y2="330"/><line x1="437" y1="260" x2="480" y2="330"/>
+  <circle cx="475" cy="330" r="7"/>
+  <line x1="472" y1="337" x2="510" y2="388"/><line x1="480" y1="337" x2="518" y2="388"/>
+  <path d="M490 388 H540 L530 398 H500 Z" />
+  <!-- far legs (lighter) -->
+  <g stroke-width="0.6" opacity="0.6">
+    <line x1="235" y1="260" x2="258" y2="332"/><line x1="258" y1="332" x2="236" y2="388"/><path d="M216 388 H256 L248 398 H224 Z"/>
+    <line x1="405" y1="260" x2="382" y2="332"/><line x1="382" y1="332" x2="404" y2="388"/><path d="M386 388 H424 L416 398 H394 Z"/>
+  </g>
+  <!-- webbed foot highlight (signal) on front foot -->
+  <path d="M490 388 H540 L530 398 H500 Z" fill="#FF4F1F" fill-opacity="0.9"/>
+  <!-- callout circle + detail -->
+  <circle cx="515" cy="393" r="30" stroke-dasharray="3 3" stroke-width="0.8"/>
+  <line x1="540" y1="372" x2="600" y2="330" stroke-width="0.8"/>
+  <circle cx="660" cy="270" r="90" stroke-width="1.25"/>
+  <!-- detail: webbed foot, bottom view -->
+  <g>
+    <line x1="660" y1="230" x2="660" y2="290" stroke-width="1.25"/>
+    <path d="M660 290 L605 330 Q630 345 660 340 Q690 345 715 330 Z" fill="#FF4F1F" fill-opacity="0.9"/>
+    <path d="M660 290 L632 338 M660 290 L660 340 M660 290 L688 338" stroke-width="0.8"/>
+    <path d="M660 282 L650 262 M660 282 L670 262" stroke-width="0.8"/>
+  </g>
+  <text x="660" y="198" text-anchor="middle" fill="#15161a" stroke="none">DETAIL A</text>
+  <text x="660" y="378" text-anchor="middle" fill="#15161a" stroke="none">WEBBED FOOT</text>
+  <!-- submersion dimension -->
+  <line x1="100" y1="400" x2="100" y2="426" stroke-width="0.8" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="60" y="446" fill="#15161a" stroke="none">SUBMERSION</text>
+  <!-- body height dim -->
+  <line x1="150" y1="170" x2="150" y2="398" stroke-width="0.4"/>
+  <line x1="130" y1="170" x2="190" y2="170" stroke-width="0.4"/>
+  <line x1="140" y1="170" x2="140" y2="398" stroke-width="0.8" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="100" y="290" fill="#15161a" stroke="none">H</text>
+  <!-- labels -->
+  <text x="330" y="150" text-anchor="middle" fill="#15161a" stroke="none">CONTROLLER / FSR INPUTS</text>
+  <text x="560" y="446" fill="#15161a" stroke="none">MUD LINE (~50% H2O)</text>
+  <g stroke-width="1"><rect x="470" y="515" width="290" height="50"/><line x1="470" y1="538" x2="760" y2="538" stroke-width="0.6"/></g>
+  <text x="480" y="531" fill="#15161a" stroke="none">QUADRUPED · WEBBED FOOT</text>
+  <text x="480" y="554" fill="#15161a" stroke="none" font-size="9">DWG 04 · SCALE NTS · REV A</text>
+</svg>

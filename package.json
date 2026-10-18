@@ -1,26 +1,10 @@
 {
-  "name": "web-portfolio-template",
+  "name": "kien-portfolio",
   "version": "1.0.0",
-  "description": "A free, open-source portfolio template for engineers, designers, and makers. Built with Next.js, Tailwind CSS, Three.js, and Framer Motion.",
-  "private": false,
+  "description": "Portfolio of Kien Nguyen — mechanical design & robotics.",
+  "private": true,
   "license": "MIT",
-  "author": "Murathan Abdullaev (https://murathan.info)",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Murathanx12/Web-Portfolio-Template"
-  },
-  "keywords": [
-    "portfolio",
-    "template",
-    "nextjs",
-    "tailwindcss",
-    "threejs",
-    "framer-motion",
-    "3d-models",
-    "sketchfab",
-    "react",
-    "typescript"
-  ],
+  "author": "Le Trung Kien Nguyen",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

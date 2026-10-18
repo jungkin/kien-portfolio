@@ -1,242 +1,297 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import type { Project } from "@/data/projects";
+import { useEffect, useRef } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import type { Project, SubmersionChart } from "@/data/projects";
 
 interface ProjectExpandedProps {
   project: Project;
   onClose: () => void;
 }
 
-export default function ProjectExpanded({
-  project,
-  onClose,
-}: ProjectExpandedProps) {
-  const [expandedImage, setExpandedImage] = useState<string | null>(null);
+function BarChart({ chart }: { chart: SubmersionChart }) {
+  const W = 560;
+  const H = 320;
+  const left = 52;
+  const right = 16;
+  const top = 56;
+  const bottom = 40;
+  const plotW = W - left - right;
+  const plotH = H - top - bottom;
+  const max = 40;
+  const ticks = [0, 10, 20, 30, 40];
+  const groupW = plotW / chart.categories.length;
+  const barW = 30;
+  const gap = 6;
+  const y = (v: number) => top + plotH - (v / max) * plotH;
+  const desc = chart.series
+    .map((s) => `${s.name}: ${s.values.map((v, i) => `${chart.categories[i]} ${v} ${chart.unit}`).join(", ")}`)
+    .join(". ");
 
-  const allImages = [project.thumbnail, ...project.images];
+  return (
+    <figure className="border border-rule bg-paper-2 p-4 sm:p-6">
+      <figcaption className="label mb-3">{chart.title} — lower is better</figcaption>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        role="img"
+        aria-label={`Grouped bar chart of ${chart.title}. ${desc}`}
+        className="h-auto w-full"
+        fontFamily="var(--font-plex-mono), monospace"
+      >
+        {/* legend */}
+        {chart.series.map((s, i) => (
+          <g key={s.name} transform={`translate(${left + i * 150}, 14)`}>
+            <rect width="12" height="12" fill={s.accent ? "var(--signal)" : "var(--ink-3)"} />
+            <text x="18" y="10" fontSize="11" fill="var(--ink-2)">
+              {s.name}
+            </text>
+          </g>
+        ))}
+        {/* gridlines + y axis */}
+        {ticks.map((t) => (
+          <g key={t}>
+            <line x1={left} x2={W - right} y1={y(t)} y2={y(t)} stroke="var(--rule)" strokeWidth="1" />
+            <text x={left - 8} y={y(t) + 4} fontSize="10" textAnchor="end" fill="var(--ink-3)">
+              {t}
+            </text>
+          </g>
+        ))}
+        <text x={left - 8} y={top - 12} fontSize="10" textAnchor="end" fill="var(--ink-3)">
+          {chart.unit}
+        </text>
+        <line x1={left} x2={W - right} y1={y(0)} y2={y(0)} stroke="var(--ink)" strokeWidth="1.25" />
+        {/* bars */}
+        {chart.categories.map((cat, ci) => {
+          const gx = left + ci * groupW + groupW / 2;
+          const total = chart.series.length * barW + (chart.series.length - 1) * gap;
+          return (
+            <g key={cat}>
+              {chart.series.map((s, si) => {
+                const v = s.values[ci];
+                const x = gx - total / 2 + si * (barW + gap);
+                return (
+                  <g key={s.name}>
+                    <rect
+                      x={x}
+                      y={y(v)}
+                      width={barW}
+                      height={y(0) - y(v)}
+                      fill={s.accent ? "var(--signal)" : "var(--ink-3)"}
+                    />
+                    <text
+                      x={x + barW / 2}
+                      y={y(v) - 5}
+                      fontSize="11"
+                      textAnchor="middle"
+                      fill="var(--ink)"
+                    >
+                      {v}
+                    </text>
+                  </g>
+                );
+              })}
+              <text x={gx} y={H - 16} fontSize="11" textAnchor="middle" fill="var(--ink-2)">
+                {cat}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </figure>
+  );
+}
+
+const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+export default function ProjectExpanded({ project, onClose }: ProjectExpandedProps) {
+  const reduce = useReducedMotion();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+      if (e.key !== "Tab" || !panelRef.current) return;
+      const nodes = panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE);
+      if (nodes.length === 0) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+      previous?.focus?.();
+    };
+  }, []);
+
+  const titleId = `project-title-${project.slug}`;
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
-      initial={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-stretch justify-center sm:items-start sm:p-6 lg:p-10"
+      initial={reduce ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
     >
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Content */}
+      <div className="absolute inset-0 bg-ink/60" onClick={onClose} aria-hidden="true" />
       <motion.div
-        className="relative z-10 w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-2xl border border-border bg-card/95 backdrop-blur-xl"
-        initial={{ scale: 0.9, y: 30 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 30 }}
-        transition={{ duration: 0.3 }}
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="relative z-10 flex max-h-full w-full max-w-[1000px] flex-col overflow-hidden border border-ink bg-paper sm:max-h-[calc(100vh-3rem)] lg:max-h-[calc(100vh-5rem)]"
+        initial={reduce ? false : { y: 16, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full border border-border bg-background/80 flex items-center justify-center text-foreground/60 hover:text-foreground hover:border-foreground transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        {/* Header bar */}
+        <div className="flex items-center justify-between gap-4 border-b border-rule px-4 py-3 sm:px-6">
+          <span className="label truncate">
+            {project.org} · {project.period}
+          </span>
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={onClose}
+            className="shrink-0 border border-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink transition-colors hover:bg-ink hover:text-paper"
+          >
+            Close <span aria-hidden="true">✕</span>
+          </button>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 md:p-8">
-          {/* Left - Main image + gallery */}
-          <div className="md:col-span-1">
-            <div
-              className="aspect-[4/3] rounded-xl border border-border overflow-hidden relative cursor-pointer hover:border-cyan/30 transition-colors"
-              onClick={() => setExpandedImage(project.thumbnail)}
-            >
-              <Image
-                src={project.thumbnail}
-                alt={project.title}
-                fill
-                className="object-cover"
-                sizes="400px"
-              />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/20">
-                <svg className="w-8 h-8 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Additional images */}
-            {project.images.length > 0 && (
-              <div className="grid grid-cols-2 gap-2 mt-3">
-                {project.images.slice(0, 4).map((img, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square rounded-lg border border-border overflow-hidden relative cursor-pointer hover:border-cyan/30 transition-colors"
-                    onClick={() => setExpandedImage(img)}
-                  >
-                    <Image
-                      src={img}
-                      alt={`${project.title} ${i + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="200px"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/20">
-                      <svg className="w-5 h-5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                      </svg>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+        <div className="overflow-y-auto overscroll-contain">
+          <div className="border-b border-rule bg-paper-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={project.thumbnail}
+              alt={`Technical drawing: ${project.title}`}
+              width={800}
+              height={600}
+              className="mx-auto h-auto max-h-[50vh] w-full object-contain p-4 sm:p-8"
+            />
           </div>
 
-          {/* Center + Right - Details */}
-          <div className="md:col-span-2 flex flex-col gap-4">
-            <div>
-              <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl md:text-3xl font-bold text-foreground">
-                {project.title}
-              </h2>
-              <p className="text-foreground/60 mt-1">{project.subtitle}</p>
-            </div>
-
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-cyan font-mono text-sm">{project.year}</span>
+          <div className="px-4 py-8 sm:px-8 sm:py-10">
+            <ul className="mb-4 flex flex-wrap items-center gap-1.5">
               {project.tags.map((tag) => (
-                <span
+                <li
                   key={tag}
-                  className="px-2 py-0.5 rounded-full bg-surface text-foreground/60 text-xs border border-border"
+                  className="border border-rule px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-2"
                 >
                   {tag}
-                </span>
+                </li>
               ))}
-            </div>
+              {project.status === "in-progress" && (
+                <li className="border border-signal px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.06em] text-signal-ink">
+                  In progress
+                </li>
+              )}
+            </ul>
+            <h3 id={titleId} className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
+              {project.title}
+            </h3>
 
-            <p className="text-foreground/60 leading-relaxed">
-              {project.description}
-            </p>
+            {/* Metrics */}
+            <dl className="mt-8 grid grid-cols-1 border border-rule sm:grid-flow-col sm:auto-cols-fr">
+              {project.metrics.map((m, i) => (
+                <div
+                  key={m.label}
+                  className={`flex flex-col p-4 sm:p-5 ${i > 0 ? "border-t border-rule sm:border-l sm:border-t-0" : ""}`}
+                >
+                  <dt className="label order-2 mt-2">{m.label}</dt>
+                  <dd className="font-display text-4xl leading-none tracking-tight text-ink order-1">{m.value}</dd>
+                </div>
+              ))}
+            </dl>
 
-            <div>
-              <span className="text-foreground/40 text-xs font-mono uppercase tracking-wider">
-                Role
-              </span>
-              <p className="text-foreground text-sm mt-1">{project.role}</p>
-            </div>
-
-            <div>
-              <span className="text-foreground/40 text-xs font-mono uppercase tracking-wider">
-                Tools
-              </span>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {project.tools.map((tool) => (
-                  <span
-                    key={tool}
-                    className="px-2 py-0.5 rounded bg-cyan/10 text-cyan text-xs font-mono border border-cyan/20"
-                  >
-                    {tool}
-                  </span>
-                ))}
+            <div className="mt-10 grid gap-10 md:grid-cols-[1fr_1fr]">
+              <div>
+                <h4 className="label mb-3">Problem</h4>
+                <p className="leading-relaxed text-ink-2">{project.problem}</p>
+              </div>
+              <div>
+                <h4 className="label mb-3">Approach</h4>
+                <p className="leading-relaxed text-ink-2">{project.approach}</p>
               </div>
             </div>
 
-            {project.highlights.length > 0 && (
+            <div className="mt-10">
+              <h4 className="label mb-3">Results</h4>
+              <ul className="border-t border-rule">
+                {project.results.map((r) => (
+                  <li key={r} className="border-b border-rule py-3 text-ink">
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {project.chart && (
+              <div className="mt-10">
+                <BarChart chart={project.chart} />
+              </div>
+            )}
+
+            <div className="mt-10 grid gap-10 md:grid-cols-[1fr_1fr]">
               <div>
-                <span className="text-foreground/40 text-xs font-mono uppercase tracking-wider">
-                  Highlights
-                </span>
-                <ul className="mt-2 space-y-1.5">
-                  {project.highlights.map((h, i) => (
-                    <li key={i} className="text-foreground/60 text-sm flex items-start gap-2">
-                      <span className="text-cyan mt-1.5 w-1.5 h-1.5 rounded-full bg-cyan flex-shrink-0" />
-                      {h}
+                <h4 className="label mb-3">Role</h4>
+                <p className="text-ink">{project.role}</p>
+              </div>
+              <div>
+                <h4 className="label mb-3">Tools</h4>
+                <ul className="flex flex-wrap gap-1.5">
+                  {project.tools.map((t) => (
+                    <li
+                      key={t}
+                      className="border border-rule px-2 py-1 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-2"
+                    >
+                      {t}
                     </li>
                   ))}
                 </ul>
               </div>
-            )}
+            </div>
 
             {project.links && project.links.length > 0 && (
-              <div className="flex gap-3 mt-2">
-                {project.links.map((link) => (
-                  <a
-                    key={link.url}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                      link.url.includes("youtube")
-                        ? "bg-red-600 border border-red-500 text-white hover:bg-red-500 shadow-[0_0_20px_rgba(220,38,38,0.2)]"
-                        : "border border-cyan text-cyan hover:bg-cyan hover:text-background"
-                    }`}
-                  >
-                    {link.url.includes("youtube") && (
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
-                        <path fill="white" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                      </svg>
-                    )}
-                    {link.label} &rarr;
-                  </a>
+              <ul className="mt-10 flex flex-wrap gap-3">
+                {project.links.map((l) => (
+                  <li key={l.url}>
+                    <a
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="border border-ink px-3 py-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink hover:bg-ink hover:text-paper"
+                    >
+                      {l.label} ↗
+                    </a>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </div>
         </div>
       </motion.div>
-
-      {/* Image lightbox */}
-      <AnimatePresence>
-        {expandedImage && (
-          <motion.div
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <div
-              className="absolute inset-0 bg-black/90"
-              onClick={() => setExpandedImage(null)}
-            />
-            <motion.div
-              className="relative z-10 max-w-4xl w-full"
-              initial={{ scale: 0.85 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.85 }}
-            >
-              <Image
-                src={expandedImage}
-                alt={project.title}
-                width={1600}
-                height={1200}
-                className="w-full h-auto object-contain max-h-[90vh] rounded-xl"
-                sizes="(max-width: 1024px) 100vw, 900px"
-                priority
-              />
-              {/* Navigation dots */}
-              <div className="flex justify-center gap-2 mt-4">
-                {allImages.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExpandedImage(img);
-                    }}
-                    className={`w-2 h-2 rounded-full transition-colors ${
-                      expandedImage === img ? "bg-cyan" : "bg-white/30 hover:bg-white/60"
-                    }`}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
