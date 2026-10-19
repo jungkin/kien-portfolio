@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" fill="none" stroke="#15161a" stroke-width="1.25" font-family="IBM Plex Mono, monospace" font-size="10">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L10 5 L0 9 z" fill="#15161a" stroke="none"/></marker>
+    <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#15161a" stroke-width="0.6"/></pattern>
+  </defs>
+  <!-- ground line -->
+  <line x1="60" y1="480" x2="740" y2="480" stroke-width="0.8"/>
+  <rect x="60" y="480" width="680" height="8" fill="url(#h)" stroke="none"/>
+  <!-- base -->
+  <rect x="110" y="436" width="180" height="44"/>
+  <rect x="110" y="436" width="180" height="10" fill="url(#h)"/>
+  <circle cx="132" cy="462" r="4"/><circle cx="268" cy="462" r="4"/>
+  <!-- column (J1 axis) -->
+  <line x1="200" y1="300" x2="200" y2="500" stroke-dasharray="14 3 2 3" stroke-width="0.8"/>
+  <rect x="172" y="340" width="56" height="96"/>
+  <line x1="172" y1="350" x2="228" y2="350" stroke-width="0.6"/>
+  <!-- shoulder block -->
+  <rect x="176" y="318" width="48" height="30"/>
+  <!-- upper arm (J2 -> J3) -->
+  <g transform="translate(200 330) rotate(-40)">
+    <rect x="0" y="-15" width="270" height="30" rx="15"/>
+    <line x1="22" y1="0" x2="248" y2="0" stroke-width="0.5" stroke-dasharray="14 3 2 3"/>
+  </g>
+  <!-- forearm (J3 -> J4) -->
+  <g transform="translate(407 156) rotate(15)">
+    <rect x="0" y="-13" width="235" height="26" rx="13"/>
+    <line x1="20" y1="0" x2="215" y2="0" stroke-width="0.5" stroke-dasharray="14 3 2 3"/>
+  </g>
+  <!-- wrist link + palm -->
+  <g transform="translate(634 217) rotate(70)">
+    <rect x="0" y="-9" width="48" height="18" rx="9"/>
+  </g>
+  <rect x="640" y="262" width="44" height="18"/>
+  <!-- gripper fingers (prismatic, signal) -->
+  <rect x="644" y="280" width="9" height="46" fill="#FF4F1F" fill-opacity="0.9"/>
+  <rect x="671" y="280" width="9" height="46" fill="#FF4F1F" fill-opacity="0.9"/>
+  <!-- joints -->
+  <g fill="#F3F1EB">
+    <circle cx="200" cy="330" r="18"/><circle cx="200" cy="330" r="6"/>
+    <circle cx="407" cy="156" r="16"/><circle cx="407" cy="156" r="5"/>
+    <circle cx="634" cy="217" r="14"/><circle cx="634" cy="217" r="4"/>
+    <circle cx="662" cy="262" r="8"/>
+  </g>
+  <!-- dimension: upper arm -->
+  <g stroke-width="0.8">
+    <line x1="200" y1="330" x2="170" y2="300" stroke-width="0.6"/>
+    <line x1="407" y1="156" x2="377" y2="126" stroke-width="0.6"/>
+    <line x1="182" y1="312" x2="389" y2="138" marker-start="url(#a)" marker-end="url(#a)"/>
+  </g>
+  <text x="250" y="204" transform="rotate(-40 250 204)" fill="#15161a" stroke="none" text-anchor="middle">L2 = 400</text>
+  <!-- dimension: forearm -->
+  <g stroke-width="0.8">
+    <line x1="407" y1="156" x2="398" y2="118" stroke-width="0.6"/>
+    <line x1="634" y1="217" x2="625" y2="179" stroke-width="0.6"/>
+    <line x1="401" y1="131" x2="628" y2="190" marker-start="url(#a)" marker-end="url(#a)"/>
+  </g>
+  <text x="510" y="148" transform="rotate(15 510 148)" fill="#15161a" stroke="none" text-anchor="middle">L3 = 350</text>
+  <!-- dimension: column height -->
+  <line x1="290" y1="330" x2="330" y2="330" stroke-width="0.6"/><line x1="290" y1="480" x2="330" y2="480" stroke-width="0.6"/>
+  <line x1="322" y1="330" x2="322" y2="480" stroke-width="0.8" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="332" y="410" fill="#15161a" stroke="none">260</text>
+  <!-- callouts -->
+  <polyline points="200,330 120,330 120,262 90,262" stroke-width="0.8"/>
+  <text x="86" y="258" fill="#15161a" stroke="none" text-anchor="end">J1 BASE (REV)</text>
+  <polyline points="187,343 150,380 90,380" stroke-width="0.8"/>
+  <text x="86" y="384" fill="#15161a" stroke="none" text-anchor="end">J2 SHOULDER</text>
+  <polyline points="407,172 407,230 470,230" stroke-width="0.8"/>
+  <text x="476" y="234" fill="#15161a" stroke="none">J3 ELBOW</text>
+  <polyline points="634,231 634,300 580,300" stroke-width="0.8"/>
+  <text x="574" y="304" fill="#15161a" stroke="none" text-anchor="end">J4 / J5 WRIST</text>
+  <polyline points="680,320 720,320 720,360 600,360" stroke-width="0.8"/>
+  <text x="594" y="364" fill="#15161a" stroke="none" text-anchor="end">J6 / J7 GRIPPER (2 × PRISMATIC)</text>
+  <!-- title block -->
+  <g stroke-width="1"><rect x="470" y="520" width="290" height="50"/><line x1="470" y1="545" x2="760" y2="545" stroke-width="0.6"/></g>
+  <text x="480" y="537" fill="#15161a" stroke="none" font-size="10">5-DOF ROBOT ARM · URDF</text>
+  <text x="480" y="562" fill="#15161a" stroke="none" font-size="9">DWG 07 · SCALE NTS · REV A</text>
+</svg>

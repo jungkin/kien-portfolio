@@ -44,11 +44,11 @@ Utility classes provided in globals.css: `.label` (mono uppercase annotation), `
 ## Page structure (`src/app/page.tsx`)
 1. **Navbar** — left: monogram "KN" in a small square box + "Kien Nguyen"; right: Work, Experience, Skills, About, Contact, and a "Résumé ↓" button (→ `/cv.pdf`). Sticky, paper background with blur, hairline bottom border once scrolled. Mobile: menu button → full-screen sheet.
 2. **Hero** — left column: label `PORTFOLIO · REV 2026.10`, name "Kien Nguyen" huge, small mono "LE TRUNG KIEN NGUYEN — HE/HIM", one-liner, status chip with pulsing orange dot "Seeking Summer 2027 robotics internships", CTAs (View work → #work, Download résumé, Email). Right: **interactive 3D planetary gearset** (react-three-fiber) drawn as ink line-art on paper; orange sun gear; correct gear ratios; slowly rotating, drag to orbit, speeds up briefly on scroll; small mono callouts "SUN Z=12", "RING Z=36", "i = 1 + Zr/Zs = 4.0". Bottom of hero: **title block strip** (like a drawing's title block) with cells: NAME / SCHOOL: Univ. of South Florida / DEGREE: B.S. Mech. Eng. '27 / GPA: 3.84 / CERT: CSWA / LOCATION: Tampa, FL.
-3. **01 — Selected Work** (`#work`) — case studies (see content). Big cards with drawing-style placeholder art, headline metric, tags. Click → detail overlay with Problem / Approach / Results / Role / Tools / gallery.
+3. **01 — Selected Work** (`#work`) — case studies (see content). Big cards with real photos/renders (DWG label overlay), headline metric, tags; featured card first. Click → detail overlay with video, Problem / Approach / Results / Key specs / Role / Tools / captioned gallery (lightbox) / "View in CAD Lab" button.
 4. **02 — Experience** (`#experience`) — timeline as a ruled table: dates (mono) | org + role | 2–3 bullets.
 5. **03 — Skills** (`#skills`) — styled as a **Bill of Materials** table: ITEM NO. | CATEGORY | COMPONENTS. Plus a small "Certified SolidWorks Associate (CSWA)" badge.
-6. **04 — About** (`#about`) — short personal bio + **Awards & Leadership** list.
-7. **05 — Gallery** (`#gallery`) — media library with filters; hidden if empty.
+6. **04 — About** (`#about`) — portrait in a drawing-sheet frame, short personal bio, **Awards & Leadership** list and an ISEF photo strip.
+7. **05 — Gallery** (`#gallery`) — media library with filters; hidden while `src/data/gallery.ts` is empty (currently empty: case-study galleries cover the media).
 8. **Contact / Footer** (`#contact`) — huge "Let's build robots together." + email, phone, LinkedIn, résumé, location. Footer line: "© 2026 Kien Nguyen · Built on an MIT template by Murathan Abdullaev".
 
 Removed from template: ParticleBackground, PolySection (3D art), Sketchfab CAD section (keep the code but not in page unless a model is added).
@@ -62,37 +62,35 @@ One-liner: "Mechanical engineering student at USF designing actuators, mechanism
 Bio: "I'm Kien, a mechanical engineering student at the University of South Florida. I've spent a summer assembling and debugging humanoid robots at VinMotion in Hanoi, I design airbrakes for USF's NASA Student Launch rocket, and back in high school I built a quadruped that could walk on landslide mud. I like the part of robotics where the math meets the metal: sizing a motor, packaging a gearbox, and making the thing actually fit together on the bench."
 
 ### Case studies
-1. **Duo-Planetary Actuator Prototypes** — VinMotion, Hanoi · Summer 2025 · tags: Actuators, Humanoids, CAD, 3D Printing
-   Metric: `2` full-scale actuator prototypes · `19` humanoid assemblies inspected.
-   Problem: VinMotion wanted to explore self-manufactured actuators for its humanoid robots and catch design errors before a public exhibition.
-   Approach: Worked with the mechanical and actuator teams on CAD review, part fit-checks and assembly of 3D-printed duo-planetary actuators; ran quality checks and assembly reviews on 16 A1.6 and 3 A2.1 humanoids; filed failure reports and fixed CAD issues.
-   Results: 2 full-scale prototypes built for future actuator experiments; design errors flagged before the exhibition; wrote A1.6 / A2.1 assembly instructions that cut onboarding time for new interns.
-   Role: Mechanical Engineering Intern. Tools: SolidWorks, Bambu Lab 3D printers, hand tools, assembly fixtures.
-2. **Rocket Airbrake Mechanism** — NASA Student Launch, USF · 2024–present · tags: Mechanism Design, Aerostructures, SolidWorks
-   Metric: `~200%` drag improvement · `42 N` per flap · `≤4 lb` system.
-   Problem: The rocket needs active airbrakes to hit its target apogee: a compact, light mechanism that deploys flaps against subsonic airflow.
-   Approach: Designed and iterated 3 SolidWorks prototypes, optimizing lever-arm travel, packaging and flap geometry; supported PID calibration and flight-readiness testing by measuring dimensions, mass properties and component angles.
-   Results: ~200% drag improvement across iterations; mechanism targets 42 N drag per flap within a ≤4 lb budget.
-   Role: Aerostructures & Airbrake Mechanical Design Junior Engineer. Tools: SolidWorks, shop tools, hand tools.
-3. **Bolted Fin Frame** — NASA Student Launch, USF · 2025 · tags: Design for Maintenance, SolidWorks
-   Metric: `~50%` faster fin replacement.
-   Designed a bolted fin-can frame so damaged fins can be swapped on the full-scale rocket without re-bonding.
-4. **Bio-Inspired Webbed Foot for a Quadruped** — ViSEF & ISEF 2023 · 2022–2023 · tags: Legged Robots, Bio-inspired, Sensors, Research
-   Metric: `25×` lower foot pressure · `1st Prize` ViSEF · `USAID Special Award` ISEF.
+Order on the page (first card is featured). Full copy lives in `src/data/projects.ts`; media is real (see Media).
+1. **Bio-Inspired Webbed Foot for a Quadruped** — HCMC Science Fair & ISEF 2023 · 2022–2023 · tags: Legged Robots, Bio-inspired, Sensors, Research
+   Metric: `25×` lower foot pressure · `20°` incline with a 1 kg kit · `ISEF` 2023 Finalist, USAID 3rd place.
    Problem: Rescue robots on landslide terrain sink into mud with ~50% water content.
-   Approach: Designed a webbed foot with a much larger end-effector contact area; sized servos from first-principles torque calcs (leg geometry, stance, mass, joint angles); integrated FSR force sensors for terrain-aware foot placement; programmed 8 gaits (walk, turn, pitch, roll, yaw).
-   Results: ~25× lower foot pressure; submersion cut from 35/21/20/10 mm to 10/6/5/3 mm across four legs; climbed a 20° incline carrying a 1 kg rescue payload.
-   Role: Researcher. Tools: CAD, Arduino, C/C++, FSR sensors, servos.
-   (Great for a small bar chart comparing rounded vs webbed submersion per leg.)
-5. **Cycloidal Gearbox for NEMA 23** — Personal project · 2026 · tags: Actuators, Gearbox Design, In Progress
-   Metric: `10 N·m` target output torque.
-   Designing a 3D-printable cycloidal reducer for a NEMA 23 servo, targeting 10 N·m output — plus planetary gearbox prototypes. Show "In progress" badge.
+   Approach: Webbed foot with a much larger contact area (PP fish-scale sole, spring suspension); servos sized from first-principles torque calcs; FSR force sensing for terrain-aware foot placement; 8 gaits via inverse kinematics.
+   Results: ~25× lower foot pressure (0.005 m² vs 0.0002 m²); submersion 35/21/20/10 mm to 10/6/5/3 mm; climbed a 20° incline with a 1 kg payload; walked on a soft mattress; ISEF 2023 Finalist, USAID Science for Development Award (3rd), 1st Prize at the HCMC fair.
+   Specs: 12 × JX DC5821LV servos (21.8 kg·cm), 3 DOF per leg, leg segments 8.8 / 14.4 cm, Raspberry Pi 4B + PCA9685, 4 × FSR-402, fisheye camera, GPS, 2S 5400 mAh LiPo.
+   Role: Researcher. Media: mud photos, 4 video clips, later-iteration arm / pan-tilt photos.
+2. **Duo-Planetary Actuator Prototypes** — VinMotion, Hanoi · Summer 2025 · tags: Actuators, Humanoids, CAD, 3D Printing
+   Metric: `2` full-scale actuator prototypes · `19` humanoid assemblies inspected (16 A1.6 + 3 A2.1).
+   Tools: SolidWorks, Bambu Lab H2D & X1C printers, CNC exposure. Links to CAD Lab M-03. The VinMotion humanoid leg drawing is employer IP and is NOT published; the humanoid photo is a company photo (small, captioned).
+3. **Rocket Airbrake Mechanism** — NASA Student Launch, USF · 2025–present (team since 09/2024) · tags: Mechanism Design, Aerostructures, SolidWorks
+   Metric: `~200%` drag improvement · `42 N` per flap · `≤4 lb` system. Hero media: SolidWorks motion clip (lead-screw nut driving the lever-arm linkage). Links to CAD Lab M-04.
+4. **Cycloidal Gearbox for NEMA 23** — Personal project · 2026–present · In progress
+   Metric: `10 N·m` target hold torque · `±0.4 mm` printer tolerance · 20:1 / 30:1 variants. Backdrivable; v2 planned in aluminium 6061. Links to CAD Lab M-01 / M-02.
+5. **Bolted Fin Frame** — NASA Student Launch, USF · 2025 · `~50%` faster fin replacement. Media: fin engineering drawings (carbon fiber, fiberglass G12).
+6. **Mars Rover (Rocker-Bogie)** — SolidWorks course → personal project · 2024–present · In progress
+   Course final (Spring 2024) scored 100/100 (≥10 custom parts, mates, drawings, McMaster-Carr parts; assembly crash solved with sub-assemblies / lightweight mode); evolving into a 3D-printed modular 600 × 400 mm rover (terrain-based tire pattern, rocker-bogie shear/bending simulation, wheel torque calcs).
+7. **5-DOF Robot Arm + URDF** — Personal project · 2026
+   SolidWorks model exported to URDF (7 joints: 5 revolute + 2 prismatic gripper fingers); earlier Arduino prototypes from 2022 (2-link inverse kinematics, joystick servo control). Links to CAD Lab M-05 (joints animate within URDF limits).
 
 ### Experience
-- 06/2025 – 08/2025 · **VinMotion**, Hanoi, Vietnam — Mechanical Engineering Intern (Mechanical Design, CAD, Prototyping & Assembly)
+Ordered by date, latest first:
 - 09/2024 – present · **NASA Student Launch (USF)**, Tampa — Aerostructures & Airbrake Mechanical Design Junior Engineer
-- 09/2022 – 05/2023 · **ViSEF & ISEF**, Texas, USA — Researcher (quadruped robotics)
+- 06/2025 – 08/2025 · **VinMotion**, Hanoi, Vietnam — Mechanical Engineering Intern (Mechanical Design, CAD, Prototyping & Assembly)
+- Summer 2025 · **C&D Semiconductor**, San Jose, CA — CAD Design Intern (SolidWorks test parts for photoresist & spin-on-dielectric process equipment; process cabinet and spin-coat bowl modules; two small renders shown in the row)
+- 09/2022 – 05/2023 · **HCMC Science Fair & ISEF** — Researcher (quadruped robotics)
 - Le Hong Phong Science Club — Head of Technical Faculty (led robotics competition teams: automation & vehicle design)
+
 
 ### Skills (BOM)
 - CAD / Design: SolidWorks (CSWA), part design, surface modeling, mechanical assemblies, engineering drawings, actuator components, DFM for 3D printing, McMaster-Carr sourcing, GD&T basics
@@ -101,13 +99,24 @@ Bio: "I'm Kien, a mechanical engineering student at the University of South Flor
 - Programming / Test: MATLAB, Python, C/C++, Arduino, VS Code, data analysis, test scripting
 - Manufacturing: 3D printing (Bambu Lab), soldering, hand & shop tools, prototype assembly, fit-checking
 
-### Awards & Leadership
-- USAID Special Award — ISEF 2023
-- 1st Prize — ViSEF 2023
-- 1st Prize — Technion Robotraffic 2023
+### Awards & Leadership (certificate wording; shown in About with an ISEF photo strip)
+- ISEF 2023 Finalist — Regeneron International Science & Engineering Fair, Dallas (May 2023), project ROBO065T
+- USAID Science for Development Award, 3rd Place — Working in Crisis & Conflict category, ISEF 2023 (NOT "Special Award")
+- 1st Prize, Robotics & Intelligent Machines — Ho Chi Minh City Science & Engineering Fair 2022–23 (do not call this "ViSEF")
+- 1st Place, 4-Wheel LEGO Category — 13th Nadav Shoham Robotraffic Competition (Technion), 2023
+- Master Robot Builders, Finland — participant 2022 & 2023 (participation only, no placing)
+- Certified SolidWorks Associate (CSWA) and SolidWorks Additive Manufacturing Associate — April 2025
 - Head of Technical Faculty — Le Hong Phong Science Club
 
 ## Media
-Real photos will arrive later. Until then each project uses an SVG **technical-drawing placeholder** in
-`public/images/projects/<slug>.svg` (ink line art of the subject on transparent bg, with dimension lines and a tiny title block).
-To swap in a photo later, change the path in `src/data/projects.ts`. Keep `alt` text meaningful.
+Real media lives in `public/images/<project>/` and `public/videos/` (web-ready WebP / H.264 MP4 with `-poster.webp`).
+Project data (`src/data/projects.ts`) supports `thumbnail`, optional `video` (muted hover clip on the card, controls in the case study),
+`moreVideos`, `gallery` (images with captions, click to enlarge; SVG schematics are kept as secondary "technical drawing" items) and
+`cadModel` ("View in CAD Lab" button, deep link `#cad/m-03`). The standalone Gallery section stays hidden (`src/data/gallery.ts` is empty)
+because case-study galleries already carry the media. Keep `alt` text meaningful.
+Do not publish: the VinMotion humanoid leg assembly drawing (employer IP), third-party images.
+
+## CAD Lab (`#cad`)
+Five models (M-01 … M-05) in `src/data/models.ts`. Plain wheel scrolls the page; Ctrl/⌘ + wheel or pinch zooms. Each model has
+`defaultExplode` / `explodeScale`. M-05 (`robot-arm.glb`, URDF-based, z-up, mm) keeps its node hierarchy and animates joints within their limits
+(paused for reduced motion).

@@ -5,6 +5,7 @@ import { useScrollspy } from "@/hooks/useScrollspy";
 
 const LINKS = [
   { label: "Work", id: "work" },
+  { label: "CAD", id: "cad" },
   { label: "Experience", id: "experience" },
   { label: "Skills", id: "skills" },
   { label: "About", id: "about" },

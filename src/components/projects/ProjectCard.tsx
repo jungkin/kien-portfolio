@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { Project } from "@/data/projects";
 
@@ -14,9 +15,42 @@ export default function ProjectCard({ project, index, featured = false, onOpen }
   const reduce = useReducedMotion();
   const headline = project.metrics[0];
   const dwg = String(index + 1).padStart(2, "0");
+  const contain = project.thumbnailFit === "contain";
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [canHover, setCanHover] = useState(false);
+
+  // Hover-to-play only on devices that can hover, and never with reduced motion.
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      setCanHover(
+        window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+          !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      );
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  const start = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.play()
+      .then(() => setPlaying(true))
+      .catch(() => {});
+  };
+  const stop = () => {
+    const v = videoRef.current;
+    setPlaying(false);
+    if (v) {
+      v.pause();
+      v.currentTime = 0;
+    }
+  };
 
   return (
     <motion.article
+      onMouseEnter={project.video && canHover ? start : undefined}
+      onMouseLeave={project.video && canHover ? stop : undefined}
       initial={reduce ? false : { opacity: 0, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
@@ -40,12 +74,39 @@ export default function ProjectCard({ project, index, featured = false, onOpen }
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={project.thumbnail}
-          alt={`Technical drawing: ${project.title}`}
+          alt={project.thumbnailAlt}
           width={800}
           height={600}
           loading="lazy"
-          className="h-full w-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.03] group-hover:-translate-y-0.5 sm:p-6"
+          style={contain ? undefined : { objectPosition: project.thumbnailPosition }}
+          className={`h-full w-full transition-transform duration-500 ease-out group-hover:scale-[1.03] ${
+            contain
+              ? "object-contain p-4 group-hover:-translate-y-0.5 sm:p-6"
+              : "object-cover"
+          }`}
         />
+        {project.video && canHover && (
+          <video
+            ref={videoRef}
+            src={project.video.src}
+            poster={project.video.poster}
+            muted
+            loop
+            playsInline
+            preload="none"
+            aria-hidden="true"
+            tabIndex={-1}
+            style={{ objectPosition: project.thumbnailPosition }}
+            className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+              playing ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        )}
+        {project.video && (
+          <span className="label absolute bottom-3 left-3 z-10 hidden bg-paper/85 px-1.5 py-0.5 sm:block">
+            ▶ Video inside
+          </span>
+        )}
       </div>
 
       {/* Text */}

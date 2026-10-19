@@ -39,3 +39,10 @@ next-env.d.ts
 .idea/
 *.swp
 *.swo
+
+# local media mining (not deployed)
+/_media_extract/
+/_media_scripts/
+.vercel
+.vercel
+.env*

@@ -11,7 +11,7 @@ export default function ExperienceSection() {
     <section id="experience" className="relative py-20 md:py-32">
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <SectionHeading
-          index="02"
+          index="03"
           title="Experience"
           kicker="Internships, research and team engineering."
         />
@@ -41,6 +41,22 @@ export default function ExperienceSection() {
                     <span>{b}</span>
                   </li>
                 ))}
+                {e.images && (
+                  <li className="flex gap-3 pt-2">
+                    {e.images.map((img) => (
+                      <figure key={img.src} className="w-24 sm:w-28">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={img.src}
+                          alt={img.alt}
+                          loading="lazy"
+                          className="aspect-[4/5] w-full border border-rule bg-paper-2 object-cover"
+                        />
+                        {img.caption && <figcaption className="label mt-1.5 normal-case">{img.caption}</figcaption>}
+                      </figure>
+                    ))}
+                  </li>
+                )}
               </ul>
             </motion.li>
           ))}

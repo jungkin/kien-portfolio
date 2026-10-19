@@ -39,7 +39,7 @@ export default function SectionHeading({
         <div className="mt-3 flex items-center justify-between">
           <span className="label">{index} —</span>
           <span className="label" aria-hidden="true">
-            {/^\d+$/.test(index) ? `SHEET ${index} / 05` : `APPENDIX ${index}`}
+            {/^\d+$/.test(index) ? `SHEET ${index} / 06` : `APPENDIX ${index}`}
           </span>
         </div>
         <h2 className="mt-6 font-display text-[clamp(2.25rem,5vw,4rem)] font-semibold leading-[1.02] tracking-tight text-ink">

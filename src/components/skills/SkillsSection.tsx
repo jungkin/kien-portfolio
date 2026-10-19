@@ -10,7 +10,7 @@ export default function SkillsSection() {
   return (
     <section id="skills" className="relative py-20 md:py-32">
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
-        <SectionHeading index="03" title="Skills" kicker="Bill of materials." />
+        <SectionHeading index="04" title="Skills" kicker="Bill of materials." />
 
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 8 }}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import type { Project, SubmersionChart } from "@/data/projects";
+import type { GalleryImage, Project, ProjectVideo, SubmersionChart } from "@/data/projects";
 
 interface ProjectExpandedProps {
   project: Project;
@@ -101,16 +102,118 @@ function BarChart({ chart }: { chart: SubmersionChart }) {
   );
 }
 
-const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE = 'a[href], button:not([disabled]), video[controls], [tabindex]:not([tabindex="-1"])';
+
+function Clip({ video, hero = false }: { video: ProjectVideo; hero?: boolean }) {
+  return (
+    <figure>
+      <video
+        src={video.src}
+        poster={video.poster}
+        muted
+        loop
+        playsInline
+        controls
+        preload={hero ? "metadata" : "none"}
+        className={`block w-full bg-ink ${hero ? "max-h-[60vh] object-contain" : "aspect-video object-contain"}`}
+      >
+        Your browser does not support embedded video.
+      </video>
+      {video.caption && (
+        <figcaption
+          className={`text-sm leading-snug text-ink-2 ${hero ? "border-t border-rule px-4 py-2 sm:px-8" : "mt-2"}`}
+        >
+          {video.caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+function Lightbox({
+  items,
+  index,
+  onIndex,
+  onClose,
+}: {
+  items: GalleryImage[];
+  index: number;
+  onIndex: (i: number) => void;
+  onClose: () => void;
+}) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const item = items[index];
+  useEffect(() => {
+    closeRef.current?.focus();
+  }, []);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") onIndex((index + 1) % items.length);
+      else if (e.key === "ArrowLeft") onIndex((index - 1 + items.length) % items.length);
+      else if (e.key === "Tab") e.preventDefault(); // keep focus inside the lightbox buttons
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [index, items.length, onIndex]);
+
+  const nav =
+    "border border-paper/60 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-paper transition-colors hover:bg-paper hover:text-ink";
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[110] flex flex-col bg-ink/95 p-4 sm:p-8"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Image viewer"
+    >
+      <div className="mb-3 flex items-center justify-between gap-4">
+        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-paper/70">
+          {index + 1} / {items.length}
+        </span>
+        <div className="flex gap-2">
+          {items.length > 1 && (
+            <>
+              <button type="button" className={nav} onClick={() => onIndex((index - 1 + items.length) % items.length)}>
+                ← Prev
+              </button>
+              <button type="button" className={nav} onClick={() => onIndex((index + 1) % items.length)}>
+                Next →
+              </button>
+            </>
+          )}
+          <button ref={closeRef} type="button" className={nav} onClick={onClose}>
+            Close ✕
+          </button>
+        </div>
+      </div>
+      <div className="flex min-h-0 flex-1 items-center justify-center" onClick={onClose}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={item.src}
+          alt={item.alt}
+          onClick={(e) => e.stopPropagation()}
+          className={`max-h-full max-w-full object-contain ${item.fit === "contain" ? "bg-paper p-4" : ""}`}
+        />
+      </div>
+      {item.caption && <p className="mt-3 text-center text-sm text-paper/85">{item.caption}</p>}
+    </div>,
+    document.body
+  );
+}
 
 export default function ProjectExpanded({ project, onClose }: ProjectExpandedProps) {
   const reduce = useReducedMotion();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const onCloseRef = useRef(onClose);
+  const [lightbox, setLightbox] = useState<number | null>(null);
+  const lightboxOpen = useRef(false);
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
+  useEffect(() => {
+    lightboxOpen.current = lightbox !== null;
+  }, [lightbox]);
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -121,9 +224,12 @@ export default function ProjectExpanded({ project, onClose }: ProjectExpandedPro
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onCloseRef.current();
+        // Escape closes the lightbox first, then the dialog
+        if (lightboxOpen.current) setLightbox(null);
+        else onCloseRef.current();
         return;
       }
+      if (lightboxOpen.current) return;
       if (e.key !== "Tab" || !panelRef.current) return;
       const nodes = panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE);
       if (nodes.length === 0) return;
@@ -182,14 +288,22 @@ export default function ProjectExpanded({ project, onClose }: ProjectExpandedPro
 
         <div className="overflow-y-auto overscroll-contain">
           <div className="border-b border-rule bg-paper-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={project.thumbnail}
-              alt={`Technical drawing: ${project.title}`}
-              width={800}
-              height={600}
-              className="mx-auto h-auto max-h-[50vh] w-full object-contain p-4 sm:p-8"
-            />
+            {project.video ? (
+              <Clip video={project.video} hero />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={project.thumbnail}
+                alt={project.thumbnailAlt}
+                width={800}
+                height={600}
+                className={
+                  project.thumbnailFit === "contain"
+                    ? "mx-auto h-auto max-h-[50vh] w-full object-contain p-4 sm:p-8"
+                    : "mx-auto h-auto max-h-[60vh] w-full object-cover"
+                }
+              />
+            )}
           </div>
 
           <div className="px-4 py-8 sm:px-8 sm:py-10">
@@ -253,6 +367,70 @@ export default function ProjectExpanded({ project, onClose }: ProjectExpandedPro
               </div>
             )}
 
+            {project.specs && project.specs.length > 0 && (
+              <div className="mt-10">
+                <h4 className="label mb-3">Key specs</h4>
+                <dl className="border-t border-rule">
+                  {project.specs.map((s) => (
+                    <div
+                      key={s.label}
+                      className="grid gap-1 border-b border-rule py-3 sm:grid-cols-[180px_1fr] sm:gap-6"
+                    >
+                      <dt className="label pt-0.5">{s.label}</dt>
+                      <dd className="text-ink">{s.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+
+            {project.moreVideos && project.moreVideos.length > 0 && (
+              <div className="mt-10">
+                <h4 className="label mb-3">More video</h4>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {project.moreVideos.map((v) => (
+                    <Clip key={v.src} video={v} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {project.gallery.length > 0 && (
+              <div className="mt-10">
+                <h4 className="label mb-3">Gallery</h4>
+                <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {project.gallery.map((g, i) => (
+                    <li key={g.src}>
+                      <figure>
+                        <button
+                          type="button"
+                          onClick={() => setLightbox(i)}
+                          aria-label={`Enlarge image: ${g.caption ?? g.alt}`}
+                          className="group/img relative block aspect-[4/3] w-full overflow-hidden border border-rule bg-paper-2 transition-colors hover:border-ink"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={g.src}
+                            alt={g.alt}
+                            loading="lazy"
+                            className={`h-full w-full transition-transform duration-500 group-hover/img:scale-[1.03] ${
+                              g.fit === "contain" ? "object-contain p-3" : "object-cover"
+                            }`}
+                          />
+                          {g.tag && (
+                            <span className="label absolute left-2 top-2 bg-paper/85 px-1.5 py-0.5">{g.tag}</span>
+                          )}
+                        </button>
+                        {g.caption && (
+                          <figcaption className="mt-2 text-sm leading-snug text-ink-2">{g.caption}</figcaption>
+                        )}
+                      </figure>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className="mt-10 grid gap-10 md:grid-cols-[1fr_1fr]">
               <div>
                 <h4 className="label mb-3">Role</h4>
@@ -273,6 +451,21 @@ export default function ProjectExpanded({ project, onClose }: ProjectExpandedPro
               </div>
             </div>
 
+            {project.cadModel && (
+              <div className="mt-10">
+                <button
+                  type="button"
+                  onClick={() => {
+                    // #cad/m-03: ProjectsSection closes this dialog on hashchange, CADLabSection selects the model
+                    window.location.hash = `cad/${project.cadModel!.toLowerCase()}`;
+                  }}
+                  className="border border-signal bg-signal px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink transition-colors hover:bg-ink hover:text-paper"
+                >
+                  View in CAD Lab → {project.cadModel}
+                </button>
+              </div>
+            )}
+
             {project.links && project.links.length > 0 && (
               <ul className="mt-10 flex flex-wrap gap-3">
                 {project.links.map((l) => (
@@ -292,6 +485,16 @@ export default function ProjectExpanded({ project, onClose }: ProjectExpandedPro
           </div>
         </div>
       </motion.div>
+      {lightbox !== null && (
+        <Lightbox
+          items={project.gallery}
+          index={lightbox}
+          onIndex={setLightbox}
+          onClose={() => {
+            setLightbox(null);
+          }}
+        />
+      )}
     </motion.div>
   );
 }

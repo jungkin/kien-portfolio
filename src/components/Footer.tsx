@@ -39,9 +39,9 @@ export default function Footer() {
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <div className="h-px w-full bg-ink" aria-hidden="true" />
         <div className="mt-3 flex items-center justify-between">
-          <span className="label">05 — Contact</span>
+          <span className="label">06 — Contact</span>
           <span className="label" aria-hidden="true">
-            Sheet 05 / 05
+            Sheet 06 / 06
           </span>
         </div>
 
