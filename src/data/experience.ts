@@ -37,10 +37,11 @@ export const experience: ExperienceEntry[] = [
     dates: "Summer 2025",
     org: "C&D Semiconductor",
     role: "CAD Design Intern",
-    location: "San Jose, CA",
+    location: "Remote (San Jose, CA)",
     bullets: [
-      "Designed test parts in SolidWorks for the company's latest photoresist and spin-on-dielectric process equipment.",
-      "Worked on equipment modules, including a process cabinet and a spin-coat bowl module.",
+      "Designed 5 new custom parts in SolidWorks for testing new photoresist coating and developer modules.",
+      "Revised 100 custom parts, equipment modules, and a process cabinet in SolidWorks, keeping CAD current.",
+      "Created engineering drawings and assemblies for legacy equipment versions to build future design documentation.",
     ],
     images: [
       {
