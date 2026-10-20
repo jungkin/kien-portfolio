@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { RESUME_URL } from "@/data/resume";
 
 const EMAIL = "nguyenletrungkien2006@gmail.com";
 
@@ -13,7 +14,7 @@ const ROWS = [
     external: true,
     download: false,
   },
-  { label: "Résumé", value: "Download PDF", href: "/cv.pdf", external: false, download: true },
+  { label: "Résumé", value: "View PDF", href: RESUME_URL, external: true, download: false },
 ];
 
 const valueClass =

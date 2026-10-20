@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useScrollspy } from "@/hooks/useScrollspy";
+import { RESUME_URL } from "@/data/resume";
 
 const LINKS = [
   { label: "Work", id: "work" },
@@ -105,11 +106,12 @@ export default function Navbar() {
             })}
             <li>
               <a
-                href="/cv.pdf"
-                download
+                href={RESUME_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="border border-ink px-3.5 py-1.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink transition-colors hover:bg-ink hover:text-paper"
               >
-                Résumé ↓
+                Résumé ↗
               </a>
             </li>
           </ul>
@@ -170,12 +172,13 @@ export default function Navbar() {
             ))}
             <li className="pt-8">
               <a
-                href="/cv.pdf"
-                download
+                href={RESUME_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setOpen(false)}
                 className="inline-block border border-ink bg-ink px-5 py-3 font-mono text-[13px] uppercase tracking-[0.08em] text-paper"
               >
-                Résumé ↓
+                Résumé ↗
               </a>
             </li>
           </ul>
