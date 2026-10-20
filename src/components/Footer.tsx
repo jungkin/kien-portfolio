@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { RESUME_URL } from "@/data/resume";
+import { RESUME_URL, onResumeClick } from "@/data/resume";
 
 const EMAIL = "nguyenletrungkien2006@gmail.com";
 
 const ROWS = [
-  { label: "Phone", value: "+1 (813) 679-8339", href: "tel:+18136798339", external: false, download: false },
+  { label: "Phone", value: "+1 (813) 679-8339", href: "tel:+18136798339", external: false, preview: false },
   {
     label: "LinkedIn",
     value: "linkedin.com/in/kien-le-trung-nguyen",
     href: "https://www.linkedin.com/in/kien-le-trung-nguyen/",
     external: true,
-    download: false,
+    preview: false,
   },
-  { label: "Résumé", value: "View PDF", href: RESUME_URL, external: true, download: false },
+  { label: "Résumé", value: "View résumé", href: RESUME_URL, external: false, preview: true },
 ];
 
 const valueClass =
@@ -82,7 +82,7 @@ export default function Footer() {
                 href={r.href}
                 className={valueClass}
                 {...(r.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                {...(r.download ? { target: "_blank", rel: "noopener" } : {})}
+                {...(r.preview ? { onClick: onResumeClick } : {})}
               >
                 {r.value}
                 <span aria-hidden="true" className={arrow}>

@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import GearFigure from "./GearFigure";
 import TitleBlock from "./TitleBlock";
-import { RESUME_URL } from "@/data/resume";
+import { RESUME_URL, onResumeClick } from "@/data/resume";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -85,11 +85,10 @@ export default function Hero() {
             </a>
             <a
               href={RESUME_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={onResumeClick}
               className="border border-ink px-5 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
             >
-              View résumé ↗
+              View résumé
             </a>
             <a
               href="mailto:nguyenletrungkien2006@gmail.com"

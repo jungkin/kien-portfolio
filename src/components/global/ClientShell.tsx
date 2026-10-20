@@ -6,12 +6,16 @@ import { ReactNode } from "react";
 const Navbar = dynamic(() => import("@/components/global/Navbar"), {
   ssr: false,
 });
+const ResumeViewer = dynamic(() => import("@/components/global/ResumeViewer"), {
+  ssr: false,
+});
 
 export default function ClientShell({ children }: { children: ReactNode }) {
   return (
     <>
       <Navbar />
       <main>{children}</main>
+      <ResumeViewer />
     </>
   );
 }
